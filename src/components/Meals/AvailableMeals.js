@@ -6,12 +6,18 @@ import MealItem from "./MealItem/MealItem";
 const AvailableMeals = () => {
   const [meals, setMeals] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [httpError, setHttpError] = useState();
 
   useEffect(() => {
     const fetchMeals = async () => {
       const response = await fetch(
         "https://react-order-app-b6f62-default-rtdb.europe-west1.firebasedatabase.app/meals.json"
       );
+
+      if (!response.ok) {
+        throw new Error("Something went wrong");
+      }
+
       const parsedResponse = await response.json();
       const loadedMeals = [];
 
@@ -26,16 +32,30 @@ const AvailableMeals = () => {
 
       setMeals(loadedMeals);
     };
-    fetchMeals();
+
+    fetchMeals().catch((e) => {
+      setIsLoading(false);
+      setHttpError(e.message);
+    });
+
     setIsLoading(false);
   }, []);
 
-  if (isLoading)
+  if (isLoading) {
     return (
-      <section className={styles.mealsLoading}>
+      <section className={styles.MealsLoading}>
         <p>Loading...</p>
       </section>
     );
+  }
+
+  if (httpError) {
+    return (
+      <section className={styles.MealsError}>
+        <p>{httpError}</p>
+      </section>
+    );
+  }
 
   const mealList = meals.map((m) => (
     <MealItem
