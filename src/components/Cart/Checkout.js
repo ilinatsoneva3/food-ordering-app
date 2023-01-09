@@ -38,6 +38,13 @@ const Checkout = (props) => {
     if (!formIsValid) {
       return;
     }
+
+    props.onConfirm({
+      name: nameRef.current.value,
+      street: streetRef.current.value,
+      city: cityRef.current.value,
+      postalCode: postalRef.current.value,
+    });
   };
 
   const nameClasses = `${styles.control} ${
